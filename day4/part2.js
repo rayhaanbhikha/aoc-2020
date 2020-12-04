@@ -39,7 +39,7 @@ const validateHeight = (value) => {
   }
 }
 
-const validatePid = (value) => value.length === 9 && Number(value) !== NaN
+const validatePid = (value) => value.length === 9 && Number(value) !== NaN && value > 0;
 
 const validatePassport = (passport) => {
   const requiredFields = new Set(['byr','ecl','eyr','hcl','hgt','iyr','pid'])
