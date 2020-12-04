@@ -21,27 +21,11 @@ const passports = data.split('\n').reduce((acc, p) => {
 }, [])
 
 const validatePassport = (passport) => {
-  const requiredFields = {
-    'byr': 1,
-    'ecl': 1,
-    'eyr': 1,
-    'hcl': 1,
-    'hgt': 1,
-    'iyr': 1,
-    'pid': 1
-  }
+  const requiredFields = new Set(['byr','ecl','eyr','hcl','hgt','iyr','pid'])
 
-  passport.split(' ').forEach(keyValuePair => {
-    const key = keyValuePair.split(':')[0];
-    requiredFields[key] = 0;
-  });
+  passport.split(' ').forEach(keyValuePair => requiredFields.delete(keyValuePair.split(':')[0]));
 
-  for (const requiredField in requiredFields) {
-    if (requiredFields[requiredField] !== 0) {
-      return false;
-    }
-  }
-  return true
+  return requiredFields.size === 0
 }
 
 let validPassports = 0;
