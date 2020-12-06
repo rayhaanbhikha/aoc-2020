@@ -37,11 +37,7 @@ console.time("Loop:")
 const answer = data.reduce((acc,groupAnswers) => {
   const set = new Set();
   groupAnswers.forEach(answers => {
-    for (const a of answers) {
-      if (!set.has(a)) {
-        set.add(a);
-      }
-    }
+    for (const a of answers) set.add(a);
   })
   return acc + set.size;;
 }, 0)
