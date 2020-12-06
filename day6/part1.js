@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const stream = fs.createReadStream('./input.txt', { encoding: 'utf-8' });
 
-// 0.274ms
+// ~0.274ms
 console.time("STREAM:")
 const lineEndChar = '\n';
 stream.on('readable', () => {
@@ -32,7 +32,7 @@ console.timeEnd("STREAM:")
 
 const data = fs.readFileSync('./input.txt', { encoding: 'utf-8' }).split('\n\n').map(i => i.split('\n'));
 
-// 3.318ms
+// ~3.318ms
 console.time("Loop:")
 const answer = data.reduce((acc,groupAnswers) => {
   const set = new Set();
