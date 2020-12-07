@@ -1,5 +1,5 @@
 const fs = require('fs');
-const data = fs.readFileSync('./input.txt', { encoding: 'utf8' }).split('\n');
+const data = fs.readFileSync('./input-example.txt', { encoding: 'utf8' }).split('\n');
 
 const bags = {}
 const r = new RegExp(/(^[0-9]{1})\ ([a-z].*)/, 's');
@@ -27,8 +27,6 @@ do {
     })
   }
 }while( queue.length !== 0 )
-
-console.log(bags)
 
 function computeNumOfBags(bags, value) {
   const res = bags[value];
