@@ -12,6 +12,10 @@ const nopAndJumpInstructions = instructionSet.reduce((acc, ins, index) => {
 
 console.log(nopAndJumpInstructions);
 
+/**
+ * A better solution would be to store the state at the flipped jump value and then continue from there the next time round. Would mean it's an O(n)
+ */
+
 function runInstruction(indexToFlipAt) {
   let globalValue = 0;
   let accIndex = 0;
