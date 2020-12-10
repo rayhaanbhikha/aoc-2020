@@ -1,21 +1,99 @@
 const fs = require('fs');
-const jolts = fs.readFileSync('./input-example.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
+const jolts = fs.readFileSync('./input.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
+console.time("START");
+const lastJolt = jolts[jolts.length - 1]+3;
+jolts.push(lastJolt);
 
-const lastJolt = jolts[jolts.length - 1];
-jolts.push(lastJolt + 3);
+const nodeCache = {};
 
+class Node {
+  constructor(value, parent) {
+    this.value = value;
+    this.parent = parent;
+    this.children = [];
+    this.weight = 0;
+  }
 
-for (const jolt of jolts) {
-  console.log(jolt);
+  add(newValue) {
+    const diff = newValue - this.value;
+    if (diff <= 3) {
+      let node;
+      if (nodeCache[newValue]) {
+        node = nodeCache[newValue];
+      } else {
+        node = new Node(newValue, this);
+        nodeCache[newValue] = node;
+      }
+      this.children.push(node);
+      return true;
+    } else {
+      for (const child of this.children) {
+        if (child.add(newValue)) {
+          break;
+        }
+      }
+    }
+  }
+
+  updateWeight() {
+    this.weight = this.children.reduce((acc, child) => {
+      if (child.weight === 0) {
+        acc++;
+      } else {
+        acc += child.weight;
+      }
+      return acc;
+    }, 0);
+    if (this.parent) {
+      this.parent.updateWeight();
+    }
+  }
+
+  addNode(newNode) {
+    if (!this.children.includes(newNode)) {
+      this.children.push(newNode);
+    }
+  }
+
+  print() {
+    console.log(this.value)
+    console.log("children: ")
+    this.children.forEach(c => console.log(c.value));
+    console.log("=================\n")
+    this.children.forEach(c => c.print());
+  }
 }
 
+const rootNode = new Node(0);
+nodeCache['0'] = rootNode;
 
-// let currentJolt = 0;
-// for (const jolt of jolts) {
-//   const diff = jolt - currentJolt;
-//   differences[diff] = differences[diff] ? differences[diff] + 1 : 1;
-//   currentJolt = jolt;
-// }
+for (let i = 0; i < jolts.length; i++) {
+  const jolt = jolts[i];
+  rootNode.add(jolt);
+}
 
-// console.log(differences['1'] * differences['3']);
+nodeCache[lastJolt].updateWeight();
 
+const sortedNodes = Object.entries(nodeCache).map(n => Number(n[0])).sort((a, b) => b - a);
+
+for (const sortedNodeKey of sortedNodes) {
+  const node = nodeCache[sortedNodeKey];
+  const node1 = nodeCache[sortedNodeKey + 1];
+  const node2 = nodeCache[sortedNodeKey + 2];
+  const node3 = nodeCache[sortedNodeKey + 3];
+
+  if (node1) {
+    node.addNode(node1)
+  }
+  if (node2) {
+    node.addNode(node2)
+  }
+  if (node3) {
+    node.addNode(node3)
+  }
+  node.updateWeight();
+}
+
+console.log(nodeCache['0'].weight);
+
+console.timeEnd("START")
