@@ -6,26 +6,25 @@ jolts.push(lastJolt);
 
 const nodeCache = {};
 
-const getFromCache = newValue => {
-  if (nodeCache[newValue]) {
-    return nodeCache[newValue];
-  } else {
-    const node = new Node(newValue);
-    nodeCache[newValue] = node;
-    return node;
-  }
-}
-
 class Node {
-  constructor(value) {
+  constructor(value, parent) {
     this.value = value;
+    this.parent = parent;
     this.children = [];
+    this.weight = 0;
   }
 
   add(newValue) {
     const diff = newValue - this.value;
     if (diff <= 3) {
-      this.children.push(getFromCache(newValue));
+      let node;
+      if (nodeCache[newValue]) {
+        node = nodeCache[newValue];
+      } else {
+        node = new Node(newValue, this);
+        nodeCache[newValue] = node;
+      }
+      this.children.push(node);
       return true;
     } else {
       for (const child of this.children) {
@@ -64,7 +63,7 @@ const emptyNodes = Object.entries(nodeCache).filter(([key, node]) => node.childr
 console.log(emptyNodes);
 
 for (const emptyNodeValue of emptyNodes) {
-  const node = getFromCache(emptyNodeValue);
+  const node = nodeCache[emptyNodeValue];
   const node1 = nodeCache[emptyNodeValue + 1];
   const node2 = nodeCache[emptyNodeValue + 2];
   const node3 = nodeCache[emptyNodeValue + 3];
