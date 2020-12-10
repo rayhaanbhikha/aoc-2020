@@ -1,9 +1,10 @@
 const fs = require('fs');
-const jolts = fs.readFileSync('./input-example2.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
+const jolts = fs.readFileSync('./input-example.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
 
-const lastJolt = jolts[jolts.length - 1];
-jolts.push(lastJolt + 3);
+const lastJolt = jolts[jolts.length - 1]+3;
+jolts.push(lastJolt);
 
+const nodeCache = {};
 // console.log(jolts);
 
 class Node {
@@ -17,12 +18,16 @@ class Node {
     const diff = newValue - this.value;
     if (diff <= 3 && diff !== 0) {
       if (!this.children.find(child => child.value === newValue)) {
-        this.children.push(new Node(newValue, this));
+        const node = new Node(newValue, this)
+        nodeCache[newValue] = node
+        this.children.push(node);
       }
       this.children.forEach(child => {
         const diff = newValue - child.value;
         if (diff <= 3 && diff !== 0) {
-          child.children.push(new Node(newValue, child));
+          const node = new Node(newValue, child)
+          nodeCache[newValue] = node
+          child.children.push(node);
         }
       });
     }
@@ -80,6 +85,7 @@ do {
   queue.unshift(...currentNode.children);
 } while (queue.length !== 0);
 
+console.log(nodeCache);
 console.log(reachedTargetNTimes)
 
 // let currentJolt = 0;
