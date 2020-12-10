@@ -74,13 +74,13 @@ for (let i = 0; i < jolts.length; i++) {
 
 nodeCache[lastJolt].updateWeight();
 
-const emptyNodes = Object.entries(nodeCache).filter(([key, node]) => node.children.length < 3 && node.value !== lastJolt).map(n => Number(n[0])).sort((a, b) => b - a);
+const sortedNodes = Object.entries(nodeCache).map(n => Number(n[0])).sort((a, b) => b - a);
 
-for (const emptyNodeValue of emptyNodes) {
-  const node = nodeCache[emptyNodeValue];
-  const node1 = nodeCache[emptyNodeValue + 1];
-  const node2 = nodeCache[emptyNodeValue + 2];
-  const node3 = nodeCache[emptyNodeValue + 3];
+for (const sortedNodeKey of sortedNodes) {
+  const node = nodeCache[sortedNodeKey];
+  const node1 = nodeCache[sortedNodeKey + 1];
+  const node2 = nodeCache[sortedNodeKey + 2];
+  const node3 = nodeCache[sortedNodeKey + 3];
 
   if (node1) {
     node.addNode(node1)
