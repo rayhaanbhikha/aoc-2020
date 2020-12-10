@@ -1,6 +1,6 @@
 const fs = require('fs');
-const jolts = fs.readFileSync('./input-example.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
-
+const jolts = fs.readFileSync('./input.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
+console.time("START");
 const lastJolt = jolts[jolts.length - 1]+3;
 jolts.push(lastJolt);
 
@@ -35,6 +35,20 @@ class Node {
     }
   }
 
+  updateWeight() {
+    this.weight = this.children.reduce((acc, child) => {
+      if (child.weight === 0) {
+        acc++;
+      } else {
+        acc += child.weight;
+      }
+      return acc;
+    }, 0);
+    if (this.parent) {
+      this.parent.updateWeight();
+    }
+  }
+
   addNode(newNode) {
     if (!this.children.includes(newNode)) {
       this.children.push(newNode);
@@ -58,9 +72,9 @@ for (let i = 0; i < jolts.length; i++) {
   rootNode.add(jolt);
 }
 
-const emptyNodes = Object.entries(nodeCache).filter(([key, node]) => node.children.length < 3 && node.value !== lastJolt).map(n => Number(n[0])).sort((a, b) => b - a);
+nodeCache[lastJolt].updateWeight();
 
-console.log(emptyNodes);
+const emptyNodes = Object.entries(nodeCache).filter(([key, node]) => node.children.length < 3 && node.value !== lastJolt).map(n => Number(n[0])).sort((a, b) => b - a);
 
 for (const emptyNodeValue of emptyNodes) {
   const node = nodeCache[emptyNodeValue];
@@ -77,22 +91,9 @@ for (const emptyNodeValue of emptyNodes) {
   if (node3) {
     node.addNode(node3)
   }
+  node.updateWeight();
 }
 
-console.log(nodeCache);
-// rootNode.print();
+console.log(nodeCache['0'].weight);
 
-const queue = [rootNode];
-const reachedTarget = lastJolt;
-console.log(lastJolt)
-let reachedTargetNTimes = 0;
-do {
-  const currentNode = queue.shift();
-  if (currentNode.value === reachedTarget) {
-    reachedTargetNTimes++;
-  }
-  queue.push(...currentNode.children);
-} while (queue.length !== 0);
-
-console.log(nodeCache);
-console.log(reachedTargetNTimes)
+console.timeEnd("START")
