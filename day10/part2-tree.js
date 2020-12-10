@@ -1,99 +1,89 @@
 const fs = require('fs');
-const jolts = fs.readFileSync('./input-example.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
+const jolts = fs.readFileSync('./input.txt', { encoding: 'utf8' }).trim().split('\n').map(n => Number(n)).sort((a, b) => a - b);
 
 const lastJolt = jolts[jolts.length - 1]+3;
 jolts.push(lastJolt);
 
 const nodeCache = {};
-// console.log(jolts);
+
+const getFromCache = newValue => {
+  if (nodeCache[newValue]) {
+    return nodeCache[newValue];
+  } else {
+    const node = new Node(newValue);
+    nodeCache[newValue] = node;
+    return node;
+  }
+}
 
 class Node {
-  constructor(value, parent) {
-    this.parent = parent;
+  constructor(value) {
     this.value = value;
     this.children = [];
   }
 
   add(newValue) {
     const diff = newValue - this.value;
-    if (diff <= 3 && diff !== 0) {
-      if (!this.children.find(child => child.value === newValue)) {
-        const node = new Node(newValue, this)
-        nodeCache[newValue] = node
-        this.children.push(node);
-      }
-      this.children.forEach(child => {
-        const diff = newValue - child.value;
-        if (diff <= 3 && diff !== 0) {
-          const node = new Node(newValue, child)
-          nodeCache[newValue] = node
-          child.children.push(node);
+    if (diff <= 3) {
+      this.children.push(getFromCache(newValue));
+      return true;
+    } else {
+      for (const child of this.children) {
+        if (child.add(newValue)) {
+          break;
         }
-      });
+      }
     }
-    this.children.forEach(child => child.add(newValue));
-  }
-
-  getNode(value) {
-    if (this.value === value) {
-      return this;
-    }
-
-    if (this.children.length > 0) {
-      return this.children.find(child => child.value === value)
-    }
-  }
-
-  print() {
-    console.log("\n=====")
-    console.log("parent: ", this.parent && this.parent.value);
-    console.log("current: ", this.value);
-    console.log("children: ")
-    this.children.forEach(child => console.log(child.value));
-    this.children.forEach(child => child.print());
   }
 }
 
-const rootNode = new Node(0, null);
+const rootNode = new Node(0);
 
-// let currentNode = rootNode;
-
-// rootNode.add(1);
-// rootNode.add(4);
-// rootNode.add(5);
-// rootNode.add(6);
-// rootNode.add(7);
-// // rootNode.add(new Node(10));
-
-
-// JSON.stringify(rootNode.print(), null, 2);
-
-// console.log()
 for (let i = 0; i < jolts.length; i++) {
-  rootNode.add(jolts[i]);
-  // console.log(i, jolts.length);
+  const jolt = jolts[i];
+  rootNode.add(jolt);
 }
-
-const queue = [rootNode];
-const reachedTarget = lastJolt;
-let reachedTargetNTimes = 0;
-do {
-  const currentNode = queue.shift();
-  if (currentNode.value === reachedTarget) {
-    reachedTargetNTimes++;
-  }
-  queue.unshift(...currentNode.children);
-} while (queue.length !== 0);
 
 console.log(nodeCache);
-console.log(reachedTargetNTimes)
 
-// let currentJolt = 0;
-// for (const jolt of jolts) {
-//   const diff = jolt - currentJolt;
-//   differences[diff] = differences[diff] ? differences[diff] + 1 : 1;
-//   currentJolt = jolt;
-// }
+const emptyNodes = Object.entries(nodeCache).filter(([key, node]) => node.children.length === 0 && node.value !== lastJolt).map(n => Number(n[0])).sort((a, b) => b - a);
 
-// console.log(differences['1'] * differences['3']);
+console.log(emptyNodes);
 
+for (const emptyNodeValue of emptyNodes) {
+  const node = getFromCache(emptyNodeValue);
+    const node1 = nodeCache[emptyNodeValue + 1];
+    const node2 = nodeCache[emptyNodeValue + 2];
+    const node3 = nodeCache[emptyNodeValue + 3];
+
+  if (node1) {
+    node.children.push(node1)
+  }
+  if (node2) {
+    node.children.push(node2)
+  }
+  if (node3) {
+    node.children.push(node3)
+  }
+}
+
+console.log(nodeCache);
+
+const queue = [rootNode];
+do {
+  if(queue.length === 0) {queue.push(rootNode)}
+  const currentNode = queue.shift();
+
+  console.log(currentNode.value);
+
+  if (currentNode.children.length === 0) {
+    // console.log("empty");
+    emptyFound = true;
+
+  } else {
+    queue.push(...currentNode.children);
+  }
+
+} while (queue.length );
+
+console.log(nodeCache)
