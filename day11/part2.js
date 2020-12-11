@@ -6,8 +6,6 @@ const occupiedSeat = '#';
 class Vector {
   constructor(x, y, label) {
     this.label = label;
-    this.originalX = x;
-    this.originalY = y;
     this._x = x;
     this._y = y;
     this._magnitude = 1;
