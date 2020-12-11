@@ -113,9 +113,7 @@ const runModel = (grid) => {
       const currentState = grid[i][j].type;
       const nextState = grid[i][j].nextState(adjacentSeats);
 
-      if (currentState !== nextState) {
-        anySeatsFlipped = true;
-      }
+      if (currentState !== nextState) anySeatsFlipped = true;
 
       newGrid[i][j] = new Position(nextState, i, j);
     }
@@ -130,18 +128,16 @@ const runModel = (grid) => {
 let anySeatsFlipped;
 let grid = createGrid(data);
 
-let i = 1;
 do {
   const res = runModel(grid);
   grid = res.newGrid;
   anySeatsFlipped = res.anySeatsFlipped;
-  i++;
 } while (anySeatsFlipped);
 
 let occupiedSeats = 0;
-for (let i = 0; i < grid.length; i++) {
-  for (let j = 0; j < grid[i].length; j++) {
-    if (grid[i][j].type === occupiedSeat) {
+for (let row of grid) {
+  for (let pos of row) {
+    if (pos.type === occupiedSeat) {
       occupiedSeats++;
     }
   }
