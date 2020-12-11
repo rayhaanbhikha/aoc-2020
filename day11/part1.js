@@ -183,3 +183,5 @@ for (let i = 0; i < grid.length; i++) {
 }
 
 console.log(occupiedSeats);
+
+console.log(grid[0].length, grid.length);
