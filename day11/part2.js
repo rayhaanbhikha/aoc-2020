@@ -48,21 +48,11 @@ class Position {
       return acc;
     }, 0);
 
-    if (this.type === emptySeat && occupiedSeats === 0) {
-      return true;
-    }
-
-    if (this.type === occupiedSeat && occupiedSeats >= 5) {
-      return true;
-    }
-
-    return false;
+    return this.type === emptySeat && occupiedSeats === 0 || this.type === occupiedSeat && occupiedSeats >= 5;
   }
 
   nextState(adjacentSeats) {
-    if (this.shouldFlip(adjacentSeats)) {
-      return this.type === emptySeat ? occupiedSeat : emptySeat;
-    }
+    if (this.shouldFlip(adjacentSeats)) return this.type === emptySeat ? occupiedSeat : emptySeat;
     return this.type;
   }
 
