@@ -5,6 +5,8 @@ const emptySeat = 'L';
 const occupiedSeat = '#';
 const floor = '.';
 
+const adjacentSeatsCache = {}
+
 class Position {
   constructor(initialType, i, j) {
     this.type = initialType;
@@ -12,8 +14,7 @@ class Position {
     this.j = j;
   }
 
-  shouldFlip() {
-    const adjacentSeats = getAdjacentSeats(this.i, this.j);
+  shouldFlip(adjacentSeats) {
     const occupiedSeats = adjacentSeats.reduce((acc, pos) => {
       if (pos.type === occupiedSeat) {
         acc++;
@@ -32,16 +33,14 @@ class Position {
     return false;
   }
 
-  nextState() {
-    if (this.shouldFlip()) {
+  nextState(adjacentSeats) {
+    if (this.shouldFlip(adjacentSeats)) {
       return this.type === emptySeat ? occupiedSeat : emptySeat;
     }
     return this.type;
   }
 
 }
-
-let grid = [];
 
 const printGrid = (grid) => {
   for (let i = 0; i < grid.length; i++) {
@@ -52,16 +51,8 @@ const printGrid = (grid) => {
   }
 }
 
-// i row, j col
-for (let i = 0; i < data.length; i++) {
-  grid.push([]);
-  for (let j = 0; j < data[i].length; j++) {
-    const seatType = data[i][j];
-    grid[i][j] = new Position(seatType, i, j);
-  }
-}
 
-const getAdjacentSeats = (currentRow, currentCol) => {
+const getAdjacentSeats = (grid, currentRow, currentCol) => {
   const adjacentSeats = {
     'n': {
       i: currentRow - 1,
@@ -121,9 +112,7 @@ const getAdjacentSeats = (currentRow, currentCol) => {
     delete adjacentSeats['se']
   }
 
-  return Object.entries(adjacentSeats).map(([_, index]) => {
-    return grid[index.i][index.j]
-  })
+  return adjacentSeats;
 }
 
 const runModel = (grid) => {
@@ -133,8 +122,18 @@ const runModel = (grid) => {
   for (let i = 0; i < grid.length; i++) {
     newGrid.push([])
     for (let j = 0; j < grid[i].length; j++) {
+
+      const key = `${i}:${j}`;
+      let adjacentSeats = adjacentSeatsCache[key];
+      if (!adjacentSeats) {
+        adjacentSeats = getAdjacentSeats(grid, i, j);
+        adjacentSeatsCache[key] = adjacentSeats;
+      }
+      const seats = Object.entries(adjacentSeats).map(([_, index]) => {
+        return grid[index.i][index.j]
+      })
       const currentState = grid[i][j].type;
-      const nextState = grid[i][j].nextState();
+      const nextState = grid[i][j].nextState(seats);
 
       if (currentState !== nextState) {
         anySeatsFlipped = true;
@@ -150,12 +149,27 @@ const runModel = (grid) => {
   }
 } 
 
-let res = {};
+const createGrid = (data) => {
+  const grid = [];
+  // i row, j col
+  for (let i = 0; i < data.length; i++) {
+    grid.push([]);
+    for (let j = 0; j < data[i].length; j++) {
+      const seatType = data[i][j];
+      grid[i][j] = new Position(seatType, i, j);
+    }
+  }
+  return grid;
+}
+
+let anySeatsFlipped;
+let grid = createGrid(data);
 
 do {
-  res = runModel(grid);
+  const res = runModel(grid);
   grid = res.newGrid;
-} while (res.anySeatsFlipped);
+  anySeatsFlipped = res.anySeatsFlipped;
+} while (anySeatsFlipped);
 
 printGrid(grid);
 
