@@ -125,6 +125,9 @@ const runModel = (grid) => {
   }
 }
 
+const label = 'seating system';
+console.time(label);
+
 let anySeatsFlipped;
 let grid = createGrid(data);
 
@@ -142,5 +145,6 @@ for (let row of grid) {
     }
   }
 }
+console.timeEnd(label);
 
 console.log(occupiedSeats);
