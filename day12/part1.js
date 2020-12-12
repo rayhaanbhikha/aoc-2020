@@ -8,10 +8,6 @@ const instructions =
       value: Number(instruction.slice(1))
     }));
 
-console.log(instructions);
-
-
-
 class Ship {
   constructor() {
     this.currentDirection = 'E';
@@ -49,37 +45,8 @@ class Ship {
     }
   }
 
-  move2(direction, value) {
-    switch (direction) {
-      case 'N':
-        this.coords.y += value;
-        break;
-      case 'S':
-        this.coords.y += value;
-        break;
-      case 'E':
-        this.coords.x += value;
-        break;
-      case 'W':
-        this.coords.x += value;
-        break;
-      case 'F':
-        this.computeForward(value);
-        break;
-      case 'L':
-        this.rotate(value);
-        break;
-      case 'R':
-        this.rotate(360-value);
-        break;
-
-    }
-  }
-
   computeForward(value) {
-    const magnitude = this.currentDirection === 'S' || this.currentDirection === 'W' ? -1 : 1;
-
-    this.move2(this.currentDirection, value * magnitude);
+    this.move(this.currentDirection, value);
   }
 
   rotate(value) {
@@ -104,22 +71,6 @@ class Ship {
 }
 
 const ship = new Ship();
-// // F10
-// // N3
-// // F7
-// // R90
-// // F11
-// ship.move('F', 10);
-// console.log(ship.coords);
-// ship.move('N', 3);
-// console.log(ship.coords);
-// ship.move('F', 7);
-// console.log(ship.coords);
-// ship.move('R', 90);
-// console.log(ship.coords);
-// ship.move('F', 11);
-
-// console.log(ship.coords);
 
 for (const { direction, value } of instructions) {
   ship.move(direction, value);
