@@ -42,7 +42,7 @@ class Ship {
   }
 
   rotate(direction, value) {
-    let m = [[1, 0], [0, 1]]
+    let m;
     const mag = direction === 'R' ? 1 : -1;
     switch (value) {
       case 90:
@@ -53,6 +53,9 @@ class Ship {
         break;
       case 270:
         m=[[0, 1*mag], [-1*mag, 0]]
+        break;
+      default:
+        m = [[1, 0], [0, 1]];
         break;
     }
     const [x, y] = multiplyM([this.wayPoint.x, this.wayPoint.y], m);
