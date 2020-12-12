@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+// a = [a1, a2] , b = [[b0,b2], [b1, b3]]
 const multiplyM = (a, b) => [a[0]*b[0][0]+a[1]*b[0][1], a[0]*b[1][0]+a[1]*b[1][1]]
 
 class Ship {
