@@ -4,32 +4,20 @@ const multiplyM = (a, b) => [a[0]*b[0][0]+a[1]*b[0][1], a[0]*b[1][0]+a[1]*b[1][1
 
 class Ship {
   constructor() {
-    this.coords = {
-      x: 0,
-      y: 0
-    }
-    this.wayPoint = {
-      x: 10,
-      y: 1
-    }
+    this.coords = { x: 0,y: 0 }
+    this.wayPoint = { x: 10, y: 1}
   }
 
   move(direction, value) {
     switch (direction) {
-      case 'N':
-      case 'S':
-      case 'E':
-      case 'W':
+      case 'N': case 'E': case 'S': case 'W':
         this.moveWayPoint(direction, value);
         break;
       case 'F':
         this.moveShip(value);
         break;
-      case 'L':
-        this.rotateL(value);
-        break;
-      case 'R':
-        this.rotateR(value);
+      case 'L': case 'R':
+        this.rotate(direction, value);
         break;
     }
   }
@@ -56,48 +44,24 @@ class Ship {
     }
   }
 
-  rotateL(value) {
+  rotate(direction, value) {
     let m;
+    const mag = direction === 'R' ? 1 : -1;
     switch (value) {
       case 90:
-        m = [[0, -1], [1, 0]]
+        m = [[0, mag*1], [-1*mag, 0]]
         break
       case 180:
         m = [[-1, 0], [0, -1]]
         break;
       case 270:
-        m = [[0, 1], [-1, 0]]
+        m = [[0, -1*mag], [1*mag, 0]]
         break;
       default:
         m = [[1, 0], [0, 1]]
         break;
     }
-
     const [x, y] = multiplyM([this.wayPoint.x, this.wayPoint.y], m);
-    
-    this.wayPoint.x = x;
-    this.wayPoint.y = y;
-  }
-
-  rotateR(value) {
-    let m;
-    switch (value) {
-      case 90:
-        m = [[0, 1], [-1, 0]]
-        break
-      case 180:
-        m = [[-1, 0], [0, -1]]
-        break;
-      case 270:
-        m = [[0, -1], [1, 0]]
-        break;
-      default:
-        m = [[1, 0], [0, 1]]
-        break;
-    }
-
-    const [x, y] = multiplyM([this.wayPoint.x, this.wayPoint.y], m);
-    
     this.wayPoint.x = x;
     this.wayPoint.y = y;
   }
@@ -127,5 +91,3 @@ for (const { direction, value } of instructions) {
 
 console.timeEnd(label);
 console.log(ship.manHattan())
-
-// console.log(Math.abs(ship.coords.x) + Math.abs(ship.coords.y))
