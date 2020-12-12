@@ -33,7 +33,7 @@ class Ship {
         this.coords.x -= value;
         break;
       case 'F':
-        this.computeForward(value);
+        this.move(this.currentDirection, value);
         break;
       case 'L':
         this.rotate(value);
@@ -41,12 +41,7 @@ class Ship {
       case 'R':
         this.rotate(360-value);
         break;
-
     }
-  }
-
-  computeForward(value) {
-    this.move(this.currentDirection, value);
   }
 
   rotate(value) {
