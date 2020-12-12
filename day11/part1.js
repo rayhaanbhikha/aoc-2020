@@ -48,24 +48,13 @@ class Position {
       return acc;
     }, 0);
 
-    if (this.type === emptySeat && occupiedSeats === 0) {
-      return true;
-    }
-
-    if (this.type === occupiedSeat && occupiedSeats >= 4) {
-      return true;
-    }
-
-    return false;
+    return this.type === emptySeat && occupiedSeats === 0 || this.type === occupiedSeat && occupiedSeats >= 4;
   }
 
   nextState(adjacentSeats) {
-    if (this.shouldFlip(adjacentSeats)) {
-      return this.type === emptySeat ? occupiedSeat : emptySeat;
-    }
+    if (this.shouldFlip(adjacentSeats)) return this.type === emptySeat ? occupiedSeat : emptySeat;
     return this.type;
   }
-
 }
 
 const createGrid = (data) => {
@@ -103,11 +92,10 @@ const getAdjacentSeats = (grid, currentRow, currentCol) => {
 }
 
 const runModel = (grid) => {
-  const newGrid = [];
   let anySeatsFlipped = false
+  const seatsChanged = {};
   
   for (let i = 0; i < grid.length; i++) {
-    newGrid.push([])
     for (let j = 0; j < grid[i].length; j++) {
       const adjacentSeats = getAdjacentSeats(grid, i, j);
       const currentState = grid[i][j].type;
@@ -115,36 +103,45 @@ const runModel = (grid) => {
 
       if (currentState !== nextState) {
         anySeatsFlipped = true;
+        seatsChanged[`${i}:${j}`] = nextState;
       }
-
-      newGrid[i][j] = new Position(nextState, i, j);
     }
   }
 
   return {
-    newGrid,
+    seatsChanged,
     anySeatsFlipped,
   }
 }
 
+const label = 'seating system';
+console.time(label);
+
 let anySeatsFlipped;
 let grid = createGrid(data);
 
-let i = 1;
 do {
   const res = runModel(grid);
-  grid = res.newGrid;
+  
+  if (res.anySeatsFlipped) {
+    Object.entries(res.seatsChanged).map(([key, newState]) => {
+      const [i, j] = key.split(':')
+      grid[i][j].type = newState;
+    })
+  }
+  
   anySeatsFlipped = res.anySeatsFlipped;
-  i++;
+
 } while (anySeatsFlipped);
 
 let occupiedSeats = 0;
-for (let i = 0; i < grid.length; i++) {
-  for (let j = 0; j < grid[i].length; j++) {
-    if (grid[i][j].type === occupiedSeat) {
+for (let row of grid) {
+  for (let pos of row) {
+    if (pos.type === occupiedSeat) {
       occupiedSeats++;
     }
   }
 }
+console.timeEnd(label);
 
 console.log(occupiedSeats);
