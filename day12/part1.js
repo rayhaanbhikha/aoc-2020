@@ -65,10 +65,14 @@ class Ship {
 
 }
 
+const label = "Ship Program"
+console.time(label);
 const ship = new Ship();
 
 for (const { direction, value } of instructions) {
   ship.move(direction, value);
 }
+
+console.timeEnd(label);
 
 console.log(Math.abs(ship.coords.x) + Math.abs(ship.coords.y))
