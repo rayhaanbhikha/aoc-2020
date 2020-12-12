@@ -6,6 +6,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Coord ...
@@ -82,7 +83,7 @@ func (s *Ship) rotate(value int) {
 }
 
 func main() {
-
+	start := time.Now()
 	ship := NewShip()
 
 	content, err := ioutil.ReadFile("./input.txt")
@@ -99,5 +100,8 @@ func main() {
 		}
 	}
 
+	t := time.Now()
+	elapsed := t.Sub(start)
+	fmt.Println("elapsed: ", elapsed)
 	fmt.Println(ship.manHattan())
 }
