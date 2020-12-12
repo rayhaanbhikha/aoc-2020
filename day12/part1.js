@@ -1,13 +1,4 @@
 const fs = require('fs');
-const instructions =
-  fs.readFileSync('./input.txt', { encoding: 'utf8' })
-    .trim()
-    .split('\n')
-    .map(instruction => ({
-      direction: instruction[0],
-      value: Number(instruction.slice(1))
-    }));
-
 class Ship {
   constructor() {
     this.currentDirection = 'E';
@@ -67,6 +58,15 @@ class Ship {
 
 const label = "Ship Program"
 console.time(label);
+const instructions =
+  fs.readFileSync('./input.txt', { encoding: 'utf8' })
+    .trim()
+    .split('\n')
+    .map(instruction => ({
+      direction: instruction[0],
+      value: Number(instruction.slice(1))
+    }));
+
 const ship = new Ship();
 
 for (const { direction, value } of instructions) {
