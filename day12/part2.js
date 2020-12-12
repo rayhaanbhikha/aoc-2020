@@ -1,7 +1,7 @@
 const fs = require('fs');
 
-// a = [a1, a2] , b = [[b0,b2], [b1, b3]]
-const multiplyM = (a, b) => [a[0]*b[0][0]+a[1]*b[0][1], a[0]*b[1][0]+a[1]*b[1][1]]
+// a = [a1, a2] , b = [[b0,b1], [b2, b3]]
+const multiplyM = (a, b) => [a[0]*b[0][0]+a[1]*b[1][0], a[0]*b[0][1]+a[1]*b[1][1]]
 
 class Ship {
   constructor() {
@@ -50,13 +50,13 @@ class Ship {
     const mag = direction === 'R' ? 1 : -1;
     switch (value) {
       case 90:
-        m = [[0, mag*1], [-1*mag, 0]]
+        m = [[0, mag*-1], [mag*1, 0]]
         break
       case 180:
         m = [[-1, 0], [0, -1]]
         break;
       case 270:
-        m = [[0, -1*mag], [1*mag, 0]]
+        m=[[0, 1*mag], [-1*mag, 0]]
         break;
       default:
         m = [[1, 0], [0, 1]]
