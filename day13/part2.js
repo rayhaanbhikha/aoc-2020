@@ -1,76 +1,66 @@
 const fs = require('fs');
 const busIDsInput =
-  fs.readFileSync('./input.txt', { encoding: 'utf8' })
+  fs.readFileSync('./input-example.txt', { encoding: 'utf8' })
     .trim()
     .split('\n')[1]
     .split(',');
 
 // last number: 41419100000000
 // 7,13,x,x,59,x,31,19
-// const busIDsInput = [1789,37,47,1889]
+// const busIDsInput = [67,7,59,61]
+// const busIDsInput = [67,'x',7,59,61]
 // const busIDsInput = [67,7,'x',59,61]
-    
+// const busIDsInput = [1789,37,47,1889]
+
 let maxBusID = 0;
 let maxBusIndex = 0;
 const busIDs = busIDsInput.reduce((busIDs, busID, index) => {
   if (busID === 'x') return busIDs;
   if (Number(busID) > maxBusID) {
-    maxBusID = busID;
+    maxBusID = Number(busID);
     maxBusIndex = index;
   }
   return [...busIDs, { id: Number(busID), index }]
 }, [])
 
-console.log(busIDsInput);
-console.log(busIDs)
+const remainingBusIds = busIDs.filter(busID => busID.id !== maxBusID);
+
+// console.log(busIDsInput);
+console.log(remainingBusIds)
 console.log(maxBusID)
 console.log(maxBusIndex)
 
-const isSomething = (t, index) => {
-  // console.log(t - index);
+const checkBusIds = (t, index) => {
   const startTime = t - index;
   const endTime = busIDsInput.length - 1 - index + t;
-  const start = (startTime) % busIDs[0].id === 0;
   const end = (endTime) % busIDs[busIDs.length - 1].id === 0
-  if (!start && !end) {
+  if (!end) {
     return false;
   }
 
-  const x = busIDs.reduce((acc, bus) => {
+  const x = remainingBusIds.reduce((acc, bus) => {
     if ((startTime + bus.index) % bus.id === 0) {
       acc++
     }
     return acc;
   }, 0);
-  return busIDs.length === x;
+  return remainingBusIds.length === x;
 }
 
 
-const t = 1068781;
-
-console.log(busIDs.reduce((acc, busId) => {
-  console.log(busId.id);
-  return acc * busId.id
-}, 1))
-
-// // console.log(Math.pow(t, 7))
-// const label = 'something';
-// console.time(label);
-// for (let i = 1; true; i++) {
-//   const x = Math.pow(busIDs[0].id, i);
-//   console.log(x);
-//   if (i > 56) {
-//     break;
-//   }
-//   if (x % 100000000 === 0) {
-//     console.log(x);
-//   }
-//   if (isSomething(x, 0)) {
-//     console.log(x, i)
-//     break;
-//   }
-// }
-// console.timeEnd(label);
+const label = 'something';
+console.time(label);
+for (let i = 1; true; i++) {
+  const x = maxBusID * i;
+  if (x % 100000000 === 0) {
+    console.log(x);
+  }
+  if (checkBusIds(x, maxBusIndex)) {
+    console.log(x - maxBusIndex, i, x)
+    break;
+  }
+}
+console.timeEnd(label);
 
 
 
