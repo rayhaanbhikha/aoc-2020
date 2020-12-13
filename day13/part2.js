@@ -1,6 +1,6 @@
 const fs = require('fs');
 const busIDsInput =
-  fs.readFileSync('./input.txt', { encoding: 'utf8' })
+  fs.readFileSync('./input-example.txt', { encoding: 'utf8' })
     .trim()
     .split('\n')[1]
     .split(',');
@@ -41,5 +41,16 @@ const getTime = busIDs => {
   return sum - busIDs[0].r
 }
 
-console.log(getTime(busIDs));
+
+const answer = getTime(busIDs);
+
+console.log("ANSWER: ", answer);
+busIDsInput.forEach((busID, index) => {
+  if (busID === 'x') {
+    console.log(busID);
+  } else {
+    console.log(Number(busID), answer+index, (answer+index) % Number(busID))
+  }
+})
+
 
