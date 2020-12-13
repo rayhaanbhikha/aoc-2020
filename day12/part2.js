@@ -1,7 +1,13 @@
 const fs = require('fs');
 
 // a = [a1, a2] , b = [[b0,b1], [b2, b3]]
-const multiplyM = (a, b) => [a[0]*b[0][0]+a[1]*b[1][0], a[0]*b[0][1]+a[1]*b[1][1]]
+const multiplyM = (a, b) => [a[0] * b[0][0] + a[1] * b[1][0], a[0] * b[0][1] + a[1] * b[1][1]]
+
+const rotationMatrix = (mag, deg) => {
+  const rads = deg * Math.PI / 180;
+  const cos = Number(Math.cos(rads).toFixed(1)), sin = Math.floor(Math.sin(rads));
+  return [ [cos, mag*-sin], [mag*sin, cos]]
+}
 
 class Ship {
   constructor() {
@@ -19,7 +25,9 @@ class Ship {
         this.coords.y +=  this.wayPoint.y * value;
         break;
       case 'L': case 'R':
-        this.rotate(direction, value);
+        const r = rotationMatrix(direction === 'R' ? 1 : -1, value);
+        const [x, y] = multiplyM([this.wayPoint.x, this.wayPoint.y], r);
+        this.wayPoint = { x, y };
         break;
     }
   }
@@ -41,27 +49,6 @@ class Ship {
     }
   }
 
-  rotate(direction, value) {
-    let m;
-    const mag = direction === 'R' ? 1 : -1;
-    switch (value) {
-      case 90:
-        m = [[0, mag*-1], [mag*1, 0]]
-        break
-      case 180:
-        m = [[-1, 0], [0, -1]]
-        break;
-      case 270:
-        m=[[0, 1*mag], [-1*mag, 0]]
-        break;
-      default:
-        m = [[1, 0], [0, 1]];
-        break;
-    }
-    const [x, y] = multiplyM([this.wayPoint.x, this.wayPoint.y], m);
-    this.wayPoint = { x, y };
-  }
-
   manHattan() {
     return Math.abs(this.coords.x) + Math.abs(this.coords.y)
   }
@@ -81,9 +68,8 @@ const instructions =
 
 const ship = new Ship();
 
-for (const { direction, value } of instructions) {
+for (const { direction, value } of instructions)
   ship.move(direction, value);
-}
 
 console.timeEnd(label);
 console.log(ship.manHattan())
