@@ -1,6 +1,6 @@
 const fs = require('fs');
 const busIDsInput =
-  fs.readFileSync('./input-example.txt', { encoding: 'utf8' })
+  fs.readFileSync('./input.txt', { encoding: 'utf8' })
     .trim()
     .split('\n')[1]
     .split(',');
@@ -13,7 +13,7 @@ const busIDsInput =
 
 const busIDs = busIDsInput.reduce((busIDs, busID, index) => {
   if (busID === 'x') return busIDs;
-  return [...busIDs, { m: Number(busID), r: busIDsInput.length - 1 - index }]
+  return [...busIDs, { m: BigInt(busID), r: BigInt(busIDsInput.length - 1 - index) }]
 }, [])
 
 console.log(busIDs)
@@ -21,17 +21,17 @@ console.log(busIDs)
 //  ax = 1 (mod m)
 function modInverse(a, m) {
   a = a % m;
-  for (let x = 1; x < m; x++) {
-    if ((a * x) % m === 1) {
+  for (let x = BigInt(1); x < m; x++) {
+    if ((a * x) % m === BigInt(1)) {
       return x;
     }
   }
-  return 1
+  return BigInt(1)
 }
 
 const getTime = busIDs => {
-  const N = busIDs.reduce((acc, busID) => acc * busID.m, 1);
-  let sum = 0
+  const N = busIDs.reduce((acc, busID) => acc * busID.m, BigInt(1));
+  let sum = BigInt(0)
   for (const busID of busIDs) {
     const ni = N / busID.m;
     const xi = modInverse(ni, busID.m);
@@ -49,7 +49,7 @@ busIDsInput.forEach((busID, index) => {
   if (busID === 'x') {
     console.log(busID);
   } else {
-    console.log(Number(busID), answer+index, (answer+index) % Number(busID))
+    console.log(Number(busID), answer+BigInt(index), (answer+BigInt(index)) % BigInt(busID))
   }
 })
 
