@@ -16,8 +16,6 @@ const busIDs = busIDsInput.reduce((busIDs, busID, index) => {
   return [...busIDs, { m: BigInt(busID), r: BigInt(busIDsInput.length - 1 - index) }]
 }, [])
 
-console.log(busIDs)
-
 //  ax = 1 (mod m)
 function modInverse(a, m) {
   a = a % m;
@@ -45,12 +43,4 @@ const getTime = busIDs => {
 const answer = getTime(busIDs);
 
 console.log("ANSWER: ", answer);
-busIDsInput.forEach((busID, index) => {
-  if (busID === 'x') {
-    console.log(busID);
-  } else {
-    console.log(Number(busID), answer+BigInt(index), (answer+BigInt(index)) % BigInt(busID))
-  }
-})
-
 
