@@ -51,23 +51,16 @@ class Node {
 }
 
 function walkNodes(rootNode) {
-  // walk through nodes;
-  const nqueue = [rootNode];
+  const queue = [rootNode];
   const nums = [];
   do {
-    const currentNode = nqueue.shift();
-    if (currentNode.child) {
-      nqueue.unshift(currentNode.child);
-    }
-    if (currentNode.isFloating) {
-      nqueue.unshift(currentNode.floatingChild);
-    }
+    const currentNode = queue.shift();
+
+    if (currentNode.child) queue.unshift(currentNode.child);
+    if (currentNode.isFloating) queue.unshift(currentNode.floatingChild);
+    if (!currentNode.child) nums.push(currentNode.binValue);
   
-    if (!currentNode.child) {
-      nums.push(currentNode.binValue);
-    }
-  
-  } while (nqueue.length !== 0);
+  } while (queue.length !== 0);
   return nums;
 }
 
