@@ -1,60 +1,14 @@
 const fs = require('fs');
+const { Coord } = require('./coord')
+const { Cube } = require('./cube')
+
 const xyGrid = fs.readFileSync('./input-example.txt', { encoding: 'utf-8' })
   .trim().split('\n').map(i => i.split(''));
-
-console.log(xyGrid);
-
-class Coord {
-  constructor(x, y, z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-}
-
-class Cube {
-  constructor(value, coord) {
-    this.coord = coord;
-    this.value = value;
-    this.nextValue = null;
-  }
-
-  get isActive() {
-    return this.value === '#';
-  }
-
-  get possibleCoords(grid3D) {
-    const { x, y, z} = this.coord;
-    const possZ = [z - 1, z, z + 1]
-    const possY = [y - 1, y, y + 1]
-    const possX = [x - 1, x, x + 1]
-    const possCoords = [];
-    possZ.forEach(pz => {
-      possY.forEach(py => {
-        possX.forEach(px => {
-          const coord = new Coord(px, py, pz);
-          if (grid3D.checkCoordExists(coord)) {
-            possCoords.push(coord)
-          }
-        })
-      })
-    });
-    return possCoords;
-  }
-
-  update(grid3D) {
-    // check all cubes around this guy.
-    console.log()
-    this.currentValue = this.nextValue;
-  }
-}
-
 class Grid3d {
   constructor(initial2DGrid) {
-    this.maxX = initial2DGrid[0].length;
-    this.maxY = 
+    this.minZ = -1;
+    this.maxZ = 1;
     this.grid = {
-      '-1': 
       '0': initial2DGrid
     }
   }
@@ -71,7 +25,9 @@ class Grid3d {
     return new Grid3d(grid);
   } 
 
-  addGrid(index, grid) {
+  addDefaultGrids() {
+    const defaultGrid = 
+    this.grid[this.minZ] = 
     this.grid[index] = grid;
   }
 
@@ -82,6 +38,7 @@ class Grid3d {
   }
 
   checkLayers() {
+
     for (const [index, grid] of this.gridLayers) {
       for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[0].length; j++) {
@@ -89,9 +46,6 @@ class Grid3d {
         }
         console.log();
       }
-
-
-
     }
   }
 
@@ -115,4 +69,7 @@ class Grid3d {
 const grid3D = Grid3d.init(xyGrid);
 
 // console.log(grid3D);
-grid3D.print()
+// grid3D.print()
+const cube = new Cube('#', new Coord(0, 0, 0));
+
+console.log(cube.neighbourHoodCoords)
