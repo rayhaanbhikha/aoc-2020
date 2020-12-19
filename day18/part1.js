@@ -1,10 +1,12 @@
-// const nums = '2 * 3 + ( 4 * 5 )';
-// const nums = '1 + ( 2 * 3 ) + ( 4 * ( 5 + 6 ) )'
 // const nums = '1 + 2 * 3 + 4 * 5 + 6';
-const input = nums.split('\ ');
-console.log(input);
+// const nums = '5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))'
+// const nums = '2 * 3 + (4 * 5)';
+// const nums = '5 + ( 8 * 3 + 9 + 3 * 4 * 3 )';
+// const nums = '5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))';
+const nums = '((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2';
+const input = Array.from(nums.replace(/\ /g, ''));
 
-// let operandStack = [];
+console.log(input);
 
 const operands = new Set(['+', '*', '(', ')']);
 
@@ -30,7 +32,17 @@ class Stack {
     do {
       const poppedItem = this.data.pop()
       if (poppedItem === item) break;
-      items.push(poppedItem);
+      items.unshift(poppedItem);
+      if (this.data.length === 0) break;
+    } while (true);
+    return items;
+  }
+
+  popAllUntil(item) {
+    const items = [];
+    do {
+      if (this.peek() === item) break;
+      items.unshift(this.data.pop());
       if (this.data.length === 0) break;
     } while (true);
     return items;
@@ -56,7 +68,9 @@ for (const op of input) {
   } else {
 
     if (op === ')') {
-      operandStack.popAll('(').forEach(op => {
+      const opsPopped = operandStack.popAll('(')
+      // opsPopped.forEach(op => postfixNotationStack.add(op));
+      opsPopped.forEach(op => {
         const x = postfixNotationStack.pop();
         const y = postfixNotationStack.pop();
         postfixNotationStack.add(compute(x, y, op))
@@ -65,8 +79,11 @@ for (const op of input) {
       operandStack.add(op)
     } else {
       const prevOp = operandStack.peek();
-      if (prevOp !== '(') {
-        operandStack.popAll().forEach(op => {
+      if (prevOp && prevOp !== '(') {
+        const opsPopped = operandStack.popAllUntil('(')
+        // console.log(op)
+        // opsPopped.forEach(op => postfixNotationStack.add(op));
+        opsPopped.forEach(op => {
           const x = postfixNotationStack.pop();
           const y = postfixNotationStack.pop();
           postfixNotationStack.add(compute(x, y, op))
