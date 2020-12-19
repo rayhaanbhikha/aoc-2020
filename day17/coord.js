@@ -10,11 +10,17 @@ class Coord {
   }
 }
 
-const neighbourCoords = (coord) => {
+const generateVals = (origin, r) => new Array(r).fill(0).reduce((acc, _, index) => {
+  acc.push(origin + (index + 1));
+  acc.push(origin - (index + 1));
+  return acc;
+}, [origin])
+
+const neighbourCoords = (coord, r) => {
   const { x, y, z} = coord;
-  const possZ = [z - 1, z, z + 1]
-  const possY = [y - 1, y, y + 1]
-  const possX = [x - 1, x, x + 1]
+  const possZ = generateVals(z, r);
+  const possY = generateVals(y, r);
+  const possX = generateVals(x, r);
   const possCoords = [];
   possZ.forEach(pz => {
     possY.forEach(py => {
