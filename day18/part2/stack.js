@@ -18,10 +18,10 @@ class Stack {
   popAll(item) {
     const items = [];
     do {
+      if (this.data.length === 0) break;
       const poppedItem = this.data.pop()
       if (poppedItem === item) break;
       items.push(poppedItem);
-      if (this.data.length === 0) break;
     } while (true);
     return items;
   }
@@ -29,9 +29,8 @@ class Stack {
   popAllUntil(item) {
     const items = [];
     do {
-      if (this.peek() === item) break;
+      if (this.data.length === 0 || this.peek() === item) break;
       items.push(this.data.pop());
-      if (this.data.length === 0) break;
     } while (true);
     return items;
   }

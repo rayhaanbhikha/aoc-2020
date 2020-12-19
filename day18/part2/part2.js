@@ -16,59 +16,43 @@ const compute = (x, y, op) => {
 
 console.log(nums.reduce((acc, numLine) => acc+evaluateLine(numLine), 0))
 
-// const nums = '2 * 3 + (4 * 5)';
-// const nums = '5 + (8 * 3 + 9 + 3 * 4 * 3)'
-// const nums = '5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))'
-// console.log(evaluateLine(nums))
-
 function evaluateLine(numLine) {
   const input = Array.from(numLine.replace(/\ /g, ''));
   const operandStack = new Stack();
   const postfixNotationStack = new Stack();
-  for (const op of input) {
-    const num = Number(op);
-    if (!operands.has(op)) {
-      postfixNotationStack.add(num);
-    } else {
-  
-      if (op === ')') {
-        const opsPopped = operandStack.popAll('(')
-        // opsPopped.forEach(op => postfixNotationStack.add(op));
-        opsPopped.forEach(op => {
-          const x = postfixNotationStack.pop();
-          const y = postfixNotationStack.pop();
-          postfixNotationStack.add(compute(x, y, op))
-        });
-      } else if (op === '(') {
-        operandStack.add(op)
-      } else {
-        const prevOp = operandStack.peek();
-        if (op === '+' && prevOp === '*' || op === prevOp) {
-          operandStack.add(op);
-          continue;
-        }
-        if (prevOp && prevOp !== '(') {
-          const opsPopped = operandStack.popAllUntil('(')
-          // console.log(op)
-          // opsPopped.forEach(op => postfixNotationStack.add(op));
-          opsPopped.forEach(op => {
-            const x = postfixNotationStack.pop();
-            const y = postfixNotationStack.pop();
-            postfixNotationStack.add(compute(x, y, op))
-          });
-        }
-        operandStack.add(op);
-      }
-    }
-  }
-  // const opsPopped = operandStack.popAllUntil('(')
-  // opsPopped.forEach(op => postfixNotationStack.add(op));
-  operandStack.popAll().forEach(op => {
+
+  const addToStack = (opsPopped) => opsPopped.forEach(op => {
       const x = postfixNotationStack.pop();
       const y = postfixNotationStack.pop();
       postfixNotationStack.add(compute(x, y, op))
     });
-    console.log(postfixNotationStack.data, operandStack.data)
+
+  for (const op of input) {
+    const num = Number(op);
+    
+    if (!operands.has(op)) {
+      postfixNotationStack.add(num);
+      continue;
+    }
+
+    const prevOp = operandStack.peek();
+
+    if (op === ')') {
+      const opsPopped = operandStack.popAll('(')
+      addToStack(opsPopped);
+    } else if (op === '(' || op === '+' && prevOp === '*' || op === prevOp) {
+      operandStack.add(op)
+    } else {
+      if (prevOp !== '(') {
+        const opsPopped = operandStack.popAllUntil('(')
+        addToStack(opsPopped);
+      }
+      operandStack.add(op);
+    }
+  }
+
+  const remainingOps = operandStack.popAll()
+  addToStack(remainingOps);
 
   return postfixNotationStack.data[0]
 }
