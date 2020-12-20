@@ -4,10 +4,10 @@ const [dRules, dMessages] = fs.readFileSync('./input.txt', { encoding: 'utf-8' }
 const rules = dRules.split('\n');
 const messages = dMessages.split('\n');
 
-console.log(rules);
-console.log(messages);
+// console.log(rules);
+// console.log(messages);
 
-const rulesingleCharRegEx = new RegExp(/^\"(\w){1}\"$/, 's')
+const rulesingleCharRegEx = new RegExp(/^\ \"(\w){1}\"$/, 's')
 const ruleNormalRegEx = new RegExp(/(\d)+/, 's');
 const rulePipeRegEx = new RegExp(/\|/, 's');
 
@@ -17,7 +17,9 @@ class Rule{
     this.rule = rule;
 
     if (rulesingleCharRegEx.test(rule)) {
-      this.rule = rule.replace(/\"/g, '');
+      this.rule = rule.replace(/(\"|\ )/g, '');
+    } else {
+      this.nestedRules = Array.from(new Set(this.rule.replace(/(\|\ )/g, '').split(' ')));
     }
   }
 
@@ -26,13 +28,15 @@ class Rule{
   }
 
   update(rule) {
-    const aReg = new RegExp(`${rule.num}`, 'g')
+    // (1){1}(?!\d)
+    const aReg = new RegExp(`(${rule.num}){1}(?!\\d)`, 'g')
+    // console.log(aReg, aReg.exec(this.rule));
     this.rule = this.rule.replace(aReg, rule.rule);
   }
 
   polish() {
     if (this.rule.includes('|')) {
-      this.rule = `(${this.rule})`
+      this.rule = `(${this.rule.replace(/(\"|\ )/g, '')})`
     }
     if (this.num === '0' && this.isComplete) {
       this.rule = `^${this.rule}$`;
@@ -40,13 +44,13 @@ class Rule{
   }
 }
 
-const rulesWeKnow = [];
+const rulesWeKnow = new Map();
 
 const ruleMap = rules.reduce((acc, rule) => {
-  const [num, ruleValue] = rule.replace(/\ /g, '').split(':');
-  const newRule = new Rule(num, ruleValue);
-  if (newRule.rule === 'a' || newRule.rule === 'b') {
-    rulesWeKnow.push(newRule);
+  const [num, ruleValue] = rule.split(':');
+  const newRule = new Rule(num, ruleValue.trim());
+  if (newRule.rule.includes('a') || newRule.rule.includes('b')) {
+    rulesWeKnow.set(num, newRule);
   } else {
     acc[num] = newRule;
   }
@@ -54,42 +58,59 @@ const ruleMap = rules.reduce((acc, rule) => {
 }, {});
 
 
-// console.log(rulesWeKnow);
+console.log(rulesWeKnow);
+console.log(ruleMap);
+// console.log(rulesWeKnow.get('4'))
 // console.log(ruleMap, ruleMap[0].isComplete);
 
+const label = 'start';
+console.time(label);
 do {
   for (const ruleWeDontKnow in ruleMap) {
     if (Object.hasOwnProperty.call(ruleMap, ruleWeDontKnow)) {
       const rule = ruleMap[ruleWeDontKnow];
-      rulesWeKnow.forEach(r => {
-        rule.update(r);
+      const nestedRules = rule.nestedRules;
+      nestedRules.forEach(nestedRule => {
+        if (rulesWeKnow.has(nestedRule)) {
+          const ruleWeKnow = rulesWeKnow.get(nestedRule);
+          rule.update(ruleWeKnow)
+        }
       })
-      rule.bracket();
+      rule.polish();
       if (rule.isComplete) {
-        rulesWeKnow.push(rule);
+        rulesWeKnow.set(rule.num, rule);
         if (rule.num !== '0') {
           delete ruleMap[ruleWeDontKnow]
         }
       }
     }
   }
-  // console.log(rulesWeKnow)
+  console.log(ruleMap)
 } while (!ruleMap[0].isComplete);
+console.timeEnd(label);
 
+// console.log('\n=======')
+// ruleMap[3].update(rulesWeKnow.get('1'));
+// ruleMap[3].update(rulesWeKnow.get('10'));
+// ruleMap[3].polish();
+// console.log(ruleMap);
 
-
-// ruleMap[2].update(aRule);
-// ruleMap[2].update(bRule);
-// ruleMap[2].bracket();
+// ruleMap[2].update(rulesWeKnow.get('4'));
+// ruleMap[2].update(rulesWeKnow.get('5'));
+// console.log(ruleMap[2].isComplete);
+// console.log(ruleMap[2].polish())
+// console.log(ruleMap);
+// // ruleMap[2].update(bRule);
+// // ruleMap[2].bracket();
 
 // console.log(ruleMap);
-// console.log(ruleMap[0].isComplete);
+// // console.log(ruleMap[0].isComplete);
 
-// ruleMap[0].update(aRule)
-// ruleMap[0].update(ruleMap[2])
-// console.log(ruleMap);
-// console.log(rulesWeKnow)
-const rule0 = new RegExp(rulesWeKnow.find(rule => rule.num === '0').rule);
+// // ruleMap[0].update(aRule)
+// // ruleMap[0].update(ruleMap[2])
+// // console.log(ruleMap);
+
+const rule0 = new RegExp(rulesWeKnow.get('0').rule);
 console.log(rule0);
 
 let sum = 0;
@@ -99,15 +120,3 @@ messages.forEach(message => {
   }
 })
 console.log(sum);
-
-
-// const rulesWeKnow = Object.entries(rulesMap).filter(([ruleNumber, rule]) => rule.value);
-
-// rulesWeKnow.forEach(([ruleNum, rule]) => {
-
-//   console.log(ruleNum, rule);
-// })
-
-// console.log(nestedRulesRegEx.exec('12'))
-// console.log(nestedRulesRegEx.exec('13|31'))
-// // console.log(rulesWeKnow);
