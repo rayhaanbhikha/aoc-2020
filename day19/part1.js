@@ -1,11 +1,7 @@
 const fs = require('fs');
 const [dRules, dMessages] = fs.readFileSync('./input.txt', { encoding: 'utf-8' }).trim().split('\n\n');
-
 const rules = dRules.split('\n');
 const messages = dMessages.split('\n');
-
-// console.log(rules);
-// console.log(messages);
 
 const rulesingleCharRegEx = new RegExp(/^\ \"(\w){1}\"$/, 's')
 const ruleNormalRegEx = new RegExp(/(\d)+/, 's');
@@ -58,8 +54,6 @@ const ruleMap = rules.reduce((acc, rule) => {
 
 console.log(rulesWeKnow);
 console.log(ruleMap);
-// console.log(rulesWeKnow.get('4'))
-// console.log(ruleMap, ruleMap[0].isComplete);
 
 const label = 'start';
 console.time(label);
@@ -86,27 +80,6 @@ do {
   console.log(ruleMap)
 } while (!ruleMap[0].isComplete);
 console.timeEnd(label);
-
-// console.log('\n=======')
-// ruleMap[3].update(rulesWeKnow.get('1'));
-// ruleMap[3].update(rulesWeKnow.get('10'));
-// ruleMap[3].polish();
-// console.log(ruleMap);
-
-// ruleMap[2].update(rulesWeKnow.get('4'));
-// ruleMap[2].update(rulesWeKnow.get('5'));
-// console.log(ruleMap[2].isComplete);
-// console.log(ruleMap[2].polish())
-// console.log(ruleMap);
-// // ruleMap[2].update(bRule);
-// // ruleMap[2].bracket();
-
-// console.log(ruleMap);
-// // console.log(ruleMap[0].isComplete);
-
-// // ruleMap[0].update(aRule)
-// // ruleMap[0].update(ruleMap[2])
-// // console.log(ruleMap);
 
 const rule0 = new RegExp(rulesWeKnow.get('0').rule);
 console.log(rule0);
