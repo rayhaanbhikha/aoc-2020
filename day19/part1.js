@@ -28,14 +28,12 @@ class Rule{
   }
 
   update(rule) {
-    // (1){1}(?!\d)
-    const aReg = new RegExp(`(${rule.num}){1}(?!\\d)`, 'g')
-    // console.log(aReg, aReg.exec(this.rule));
+    const aReg = new RegExp(`(?<!\\d)(${rule.num}){1}(?!\\d)`, 'g')
     this.rule = this.rule.replace(aReg, rule.rule);
   }
 
   polish() {
-    if (this.rule.includes('|')) {
+    if (this.rule.includes('|') && this.isComplete) {
       this.rule = `(${this.rule.replace(/(\"|\ )/g, '')})`
     }
     if (this.num === '0' && this.isComplete) {
