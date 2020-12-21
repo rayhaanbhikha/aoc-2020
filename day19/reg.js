@@ -1,51 +1,32 @@
-
-// const rule42 = '((b(a(bb|ab)|b((a|b)(a|b)))|a(bbb|a(bb|a(a|b))))b|(((aa|ab)a|bbb)b|(((a|b)a|bb)a)a)a)'
-// const rule30 = '(b(b(aba|baa)|a(b(ab|(a|b)a)|a(ba|ab)))|a(b((ab|(a|b)a)b|((a|b)a|bb)a)|a(bab|(ba|bb)a)))'
-// const baseRegex = new RegExp(`^${rule42}+${rule30}{1,}$`, 'gm');
-
-// // const val = 'bbabbbbaabaabba'
-// // const message = 'aaaabbaaaabbaaa'
-// const message = 'aaabbbbbbaaaabaababaabababbabaaabbababababaaa'
-
-// const messages = [
-//   'abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa',
-//   'bbabbbbaabaabba',
-//   'babbbbaabbbbbabbbbbbaabaaabaaa',
-//   'aaabbbbbbaaaabaababaabababbabaaabbababababaaa',
-//   'bbbbbbbaaaabbbbaaabbabaaa',
-//   'bbbababbbbaaaaaaaabbababaaababaabab',
-//   'ababaaaaaabaaab',
-//   'ababaaaaabbbaba',
-//   'baabbaaaabbaaaababbaababb',
-//   'abbbbabbbbaaaababbbbbbaaaababb',
-//   'aaaaabbaabaaaaababaa',
-//   'aaaabbaaaabbaaa',
-//   'aaaabbaabbaaaaaaabbbabbbaaabbaabaaa',
-//   'babaaabbbaaabaababbaabababaaab',
-//   'aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba',
-// ]
-
-// let sum = 0;
-// messages.forEach((message, index) => {
-//   // console.log(index+1, message)
-//   if (testMessage(message, baseRegex)) {
-//     sum++;
-//   }
-// })
-// console.log(sum);
-
-function testMessage(message, baseRegex, rule42, rule31) {
-  const matches = computeGroupMatches(message, baseRegex);
-  console.log(matches);
-  if (matches < 1) {
+function testMessage(message, baseRegex, rule31, rule42) {
+  // rule31
+  const res = baseRegex.exec(message);
+  if (!res) {
     return false;
   }
-  const rule0 = new RegExp(`^${rule42}+${rule31}{${matches}}$`);
-  return rule0.test(message);
+  const stringsMatchingRule31 = res.groups.rule31;
+  
+  const plainRule31Regex = new RegExp(rule31, 'gm');
+  const numOfTimesRule31Matches = computeGroupMatches(stringsMatchingRule31, plainRule31Regex);
+  
+  // rule42
+  const stringsMatchingRule42 = res.groups.rule42;
+  
+  const plainRule42Regex = new RegExp(rule42, 'gm');
+  const numOfTimesRule42Matches = computeGroupMatches(stringsMatchingRule42, plainRule42Regex);
+  
+  if (numOfTimesRule42Matches < numOfTimesRule31Matches) {
+    return false;
+  }
+  
+  const rule31Group = `(?<rule31>${rule31}{${numOfTimesRule31Matches}})`;
+  const rule42Group1 = `(?<rule42part1>${rule42}+)`
+  const rule42Group2 = `(?<rule42part2>${rule42}{${numOfTimesRule31Matches}})`
+  const actualRegex =  new RegExp(`^${rule42Group1}${rule42Group2}${rule31Group}$`, 's');
+  return actualRegex.test(message);
 }
 
-// const regex = /(ab|ba{1})a/gm;
-// const str = `abbaa`;
+
 function computeGroupMatches(message, regex) {
   let m;
   let matches = 0;
@@ -56,12 +37,13 @@ function computeGroupMatches(message, regex) {
       }
       
       // The result can be accessed through the `m`-variable.
-
-    m.forEach((match, groupIndex) => {
-      if (match) {
-        matches++
-      }
-    });
+    // console.log("hello: ", m)
+    matches++
+    // m.forEach((match, groupIndex) => {
+    //   if (match) {
+    //     matches++
+    //   }
+    // });
     // console.log(matches)
   }
   return matches;
