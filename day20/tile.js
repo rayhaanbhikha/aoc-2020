@@ -19,6 +19,67 @@ class Tile {
     this.gridBorderVals = gridBorderVals
     this.originalGridBorderVals = gridBorderVals
   }
+
+  getBorderAsFlattenedArray() {
+    return this.gridBorderVals.reduce((acc, borderVals) => [...acc, ...borderVals], []);
+  }
+
+  checkAgainstOtherTile(otherTileBorderVals) {
+    // if top === bottom of another tile.
+    if (this.topBorderVals === otherTileBorderVals) {
+    // bordersMatched = true;
+    // tileConnections[tile.id] = {
+    //   connectionType: 'bottom',
+    //   tile: currentTile
+    // }
+      return true;
+    }
+
+    // top row but reversed matches bottom.
+    if (this.topBorderVals.reverse() === otherTileBorderVals) {
+      // currentTile.flipX();
+      // TODO: flipX
+      return true;
+    }
+
+    // bottom row matches bottom of other tile - need to flipY
+    if (this.bottomBorderVals === otherTileBorderVals) {
+      // currentTile.flipY();
+      // TODO: flipY
+      return true;
+    }
+
+    // bottom row in reverse matches bottom of other tile - need to flipY.
+    if (this.bottomBorderVals.reverse() === otherTileBorderVals) {
+      // TODO: flipX
+      // TODO: flipY
+      return true;
+    }
+
+    if (this.leftBorderVals === otherTileBorderVals) {
+      // TODO: rotate 270.
+      return true;
+    }
+
+    if (this.leftBorderVals.reverse() === otherTileBorderVals) {
+      // TODO: rotate 270.
+      // TODO: flipX.
+      return true;
+    }
+
+    if (this.rightBorderVals === otherTileBorderVals) {
+      // TODO: rotate 90.
+      return true;
+    }
+
+    if (this.rightBorderVals.reverse() === otherTileBorderVals) {
+      // TODO: rotate 90.
+      // TODO: flipX.
+      return true;
+    }
+
+    return false;
+  }
   
   get topBorderVals() {
     return this.gridBorderVals[0];
