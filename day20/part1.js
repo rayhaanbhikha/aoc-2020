@@ -1,12 +1,9 @@
 const fs = require('fs');
 const { Tile } = require('./tile');
-const tiles = fs.readFileSync('./input-example.txt', { encoding: 'utf-8' }).trim().split('\n\n');
-
-const tileSet = new Set();
+const tiles = fs.readFileSync('./input.txt', { encoding: 'utf-8' }).trim().split('\n\n');
 
 const tileMap = tiles.reduce((acc, t) => {
   const tile = new Tile(t);
-  tileSet.add(tile);
   return {
     ...acc,
     [tile.id]: tile
@@ -17,38 +14,33 @@ function getTilesExcluding(excludeTile) {
   return Object.entries(tileMap).filter(([key, tile]) => tile.id !== excludeTile.id);
 }
 
-const tileConnections = {};
-
-const overallGrid = [[]]
-
-const hasAnyMatches = (currentTile) => {
-  console.log(currentTile.id);
-  const remainingTiles = getTilesExcluding(currentTile);
-  
-  // let bordersMatched = false;
-  let numOfMatches = 0;
-  for (const [key, tile] of remainingTiles) {
-    tile.gridBorderVals.forEach(borderVals => {
-      if (currentTile.checkAgainstOtherTile(borderVals)) {
-        numOfMatches++;
+const findMatches = (tile1, tile2) => {
+  const matches = [];
+  for (const tile1Border of tile1.allBorderVals) {
+    for (const tile2Border of tile2.standardBorderVals) {
+      if (tile1Border === tile2Border) {
+        matches.push(tile1Border);
       }
-    });
-    console.log("trying: ", tile.id, "matches: ", numOfMatches);
+    }
   }
-  if (numOfMatches === 2) {
-    cornerTiles.push(currentTile);
-  }
-  return numOfMatches;
+  return matches;
 }
 
-console.log(hasAnyMatches(tileMap['1951']))
+const checkTile = (tile) => {
+  let tileMatches = 0;
+  for (const [_, otherTile] of getTilesExcluding(tile)) {
+    if (findMatches(tile, otherTile).length > 0) {
+      tileMatches++;
+    }
+  }
+  return tileMatches;
+}
 
-// const getCornerTiles = () => {
-//   const cornerTiles = [];
-//   for (const [tileId, currentTile] of Object.entries(tileMap)) {
-    
-//   }
-//   return cornerTiles;
-// }
+let sum = 1n;
+for (const [tileId, tile] of Object.entries(tileMap)) {
+  if (checkTile(tile) === 2) {
+    sum *= BigInt(Number(tileId));
+  }
+}
 
-// console.log(getCornerTiles());
+console.log(sum);
