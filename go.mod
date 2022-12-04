@@ -1,3 +1,3 @@
-module github.com/rayhaanbhikha/advent_of_code_2020
+module github.com/rayhaanbhikha/aoc-2020
 
-go 1.14
+go 1.18
